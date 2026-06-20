@@ -34,6 +34,8 @@ test("Hearth hub stays navigation-only with four stacked room entries", () => {
   assert.match(file, /The Greenhouse/);
   assert.match(file, /The Post Office/);
   assert.match(file, /The Courtyard/);
+  assert.match(file, /The Hearth is for subscribers/);
+  assert.match(file, /locked=\{!subscription\.isSubscriber\}/);
 });
 
 test("Hearth room pages expose mobile-first stacked support sections", () => {
@@ -46,7 +48,7 @@ test("Hearth room pages expose mobile-first stacked support sections", () => {
   assert.match(source(hearthFiles.postOffice), /Safety & Care/);
 
   assert.match(source(hearthFiles.greenhouse), /stats/);
-  assert.match(source(hearthFiles.greenhouse), /Subscriber Sanctuary/);
+  assert.doesNotMatch(source(hearthFiles.greenhouse), /Subscriber Sanctuary/);
   assert.match(source(hearthFiles.greenhouse), /Water Reminder/);
 
   assert.match(source(hearthFiles.courtyard), /Daily Prompt/);

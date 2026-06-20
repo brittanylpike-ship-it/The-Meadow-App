@@ -2,6 +2,7 @@ import React from "react";
 
 import { useAuth } from "@/features/auth/auth-context";
 import { hasSupabaseConfig, supabase } from "@/services/supabase";
+import { moderateContent, writeModerationLog } from "@/services/moderationService";
 
 export type HearthRoom = "courtyard" | "post_office";
 
@@ -16,6 +17,7 @@ export type HearthPost = {
   seal_count: number;
   reply_count: number;
   created_at: string;
+  flagged?: boolean;
 };
 
 export type HearthReply = {
@@ -26,12 +28,14 @@ export type HearthReply = {
   display_name: string;
   seal_count: number;
   created_at: string;
+  flagged?: boolean;
 };
 
 type AddPostInput = {
   title?: string | null;
   content: string;
   category: string;
+  flagged?: boolean;
 };
 
 const mockPosts: HearthPost[] = [
@@ -130,8 +134,9 @@ export function useHearthPosts(room: HearthRoom, category?: string) {
     try {
       let query = supabase
         .from("hearth_posts")
-        .select("id,user_id,room,category,title,content,seal_count,reply_count,created_at,profiles(display_name)")
+        .select("id,user_id,room,category,title,content,seal_count,reply_count,created_at,flagged,is_deleted,profiles(display_name)")
         .eq("room", room)
+        .eq("is_deleted", false)
         .order("created_at", { ascending: false });
 
       if (category && category !== "all") {
@@ -144,7 +149,7 @@ export function useHearthPosts(room: HearthRoom, category?: string) {
       }
 
       setPosts(
-        (data ?? []).map((row: any) => ({
+        (data ?? []).filter((row: any) => !row.flagged || row.user_id === user.id).map((row: any) => ({
           id: row.id,
           user_id: row.user_id,
           room: row.room,
@@ -155,6 +160,7 @@ export function useHearthPosts(room: HearthRoom, category?: string) {
           seal_count: row.seal_count ?? 0,
           reply_count: row.reply_count ?? 0,
           created_at: row.created_at,
+          flagged: row.flagged ?? false,
         }))
       );
     } catch (caught) {
@@ -176,6 +182,18 @@ export function useHearthPosts(room: HearthRoom, category?: string) {
         return null;
       }
 
+      const moderation = await moderateContent(trimmed);
+      if (!moderation.approved) {
+        await writeModerationLog({
+          authorId: user?.id,
+          contentText: trimmed,
+          contentType: room === "post_office" ? "letter" : "post",
+          flagLevel: moderation.flagLevel === "clean" ? "hard_flag" : moderation.flagLevel,
+          reason: moderation.reason ?? "The message needs review before it can be shared.",
+        });
+        return null;
+      }
+
       const localPost: HearthPost = {
         id: `local-post-${Date.now()}`,
         user_id: user?.id ?? "local_mock",
@@ -187,6 +205,7 @@ export function useHearthPosts(room: HearthRoom, category?: string) {
         seal_count: 0,
         reply_count: 0,
         created_at: new Date().toISOString(),
+        flagged: input.flagged ?? moderation.flagLevel === "soft_flag",
       };
 
       if (!hasSupabaseConfig || !supabase || !user) {
@@ -198,13 +217,14 @@ export function useHearthPosts(room: HearthRoom, category?: string) {
         const { data, error: insertError } = await supabase
           .from("hearth_posts")
           .insert({
-            user_id: user.id,
-            room,
             category: input.category,
-            title: input.title?.trim() || null,
             content: trimmed,
+            flagged: input.flagged ?? moderation.flagLevel === "soft_flag",
+            room,
+            title: input.title?.trim() || null,
+            user_id: user.id,
           })
-          .select("id,user_id,room,category,title,content,seal_count,reply_count,created_at")
+          .select("id,user_id,room,category,title,content,seal_count,reply_count,created_at,flagged")
           .single();
 
         if (insertError) {
@@ -213,6 +233,16 @@ export function useHearthPosts(room: HearthRoom, category?: string) {
 
         const savedPost = { ...(data as Omit<HearthPost, "display_name">), display_name: localPost.display_name };
         setPosts((current) => [savedPost, ...current]);
+        if (moderation.flagLevel === "soft_flag") {
+          await writeModerationLog({
+            authorId: user.id,
+            contentId: savedPost.id,
+            contentText: trimmed,
+            contentType: room === "post_office" ? "letter" : "post",
+            flagLevel: moderation.flagLevel,
+            reason: moderation.reason ?? "The message needs review before others see it.",
+          });
+        }
         return savedPost;
       } catch (caught) {
         setError(getErrorMessage(caught));
@@ -272,8 +302,9 @@ export function usePostReplies(postId?: string) {
     try {
       const { data, error: queryError } = await supabase
         .from("hearth_replies")
-        .select("id,post_id,user_id,content,seal_count,created_at,profiles(display_name)")
+        .select("id,post_id,user_id,content,seal_count,created_at,flagged,is_deleted,profiles(display_name)")
         .eq("post_id", postId)
+        .eq("is_deleted", false)
         .order("created_at", { ascending: true });
 
       if (queryError) {
@@ -281,7 +312,7 @@ export function usePostReplies(postId?: string) {
       }
 
       setReplies(
-        (data ?? []).map((row: any) => ({
+        (data ?? []).filter((row: any) => !row.flagged || row.user_id === user.id).map((row: any) => ({
           id: row.id,
           post_id: row.post_id,
           user_id: row.user_id,
@@ -289,6 +320,7 @@ export function usePostReplies(postId?: string) {
           display_name: row.profiles?.display_name ?? "Meadow Friend",
           seal_count: row.seal_count ?? 0,
           created_at: row.created_at,
+          flagged: row.flagged ?? false,
         }))
       );
     } catch (caught) {
@@ -310,6 +342,18 @@ export function usePostReplies(postId?: string) {
         return null;
       }
 
+      const moderation = await moderateContent(trimmed);
+      if (!moderation.approved) {
+        await writeModerationLog({
+          authorId: user?.id,
+          contentText: trimmed,
+          contentType: "comment",
+          flagLevel: moderation.flagLevel === "clean" ? "hard_flag" : moderation.flagLevel,
+          reason: moderation.reason ?? "The reply needs review before it can be shared.",
+        });
+        return null;
+      }
+
       const localReply: HearthReply = {
         id: `local-reply-${Date.now()}`,
         post_id: postId,
@@ -318,6 +362,7 @@ export function usePostReplies(postId?: string) {
         display_name: user?.email?.split("@")[0] ?? "You",
         seal_count: 0,
         created_at: new Date().toISOString(),
+        flagged: moderation.flagLevel === "soft_flag",
       };
 
       if (!hasSupabaseConfig || !supabase || !user) {
@@ -328,8 +373,8 @@ export function usePostReplies(postId?: string) {
       try {
         const { data, error: insertError } = await supabase
           .from("hearth_replies")
-          .insert({ post_id: postId, user_id: user.id, content: trimmed })
-          .select("id,post_id,user_id,content,seal_count,created_at")
+          .insert({ content: trimmed, flagged: moderation.flagLevel === "soft_flag", post_id: postId, user_id: user.id })
+          .select("id,post_id,user_id,content,seal_count,created_at,flagged")
           .single();
 
         if (insertError) {
@@ -338,6 +383,16 @@ export function usePostReplies(postId?: string) {
 
         const savedReply = { ...(data as Omit<HearthReply, "display_name">), display_name: localReply.display_name };
         setReplies((current) => [...current, savedReply]);
+        if (moderation.flagLevel === "soft_flag") {
+          await writeModerationLog({
+            authorId: user.id,
+            contentId: savedReply.id,
+            contentText: trimmed,
+            contentType: "comment",
+            flagLevel: moderation.flagLevel,
+            reason: moderation.reason ?? "The reply needs review before others see it.",
+          });
+        }
         return savedReply;
       } catch (caught) {
         setError(getErrorMessage(caught));

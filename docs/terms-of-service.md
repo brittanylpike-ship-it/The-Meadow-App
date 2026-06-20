@@ -12,7 +12,7 @@
 - The Meadow is a wellness companion app. It is not therapy, not a crisis service, and not a medical provider.
 - By using the app, you agree to be kind in community spaces.
 - You own your journal entries and your creative contributions.
-- Subscriptions to The Greenhouse are billed through the App Store or Google Play and must be cancelled there.
+- Subscriptions to The Hearth are billed through the App Store or Google Play and must be cancelled there.
 - We can terminate accounts that violate community standards.
 - If you are in crisis, please contact 988 (call or text) or text HOME to 741741.
 
@@ -78,8 +78,8 @@ The grief support resources listed in the app's Profile screen are provided as i
 
 ## 5. Subscription Terms
 
-### The Greenhouse Subscription
-Certain features of The Meadow (collectively "The Greenhouse") are available only to paying subscribers. The Greenhouse includes healing circles, guided workshops, the resource library, the journaling nook, and other features as described in the app.
+### The Hearth Subscription
+The Hearth is available only to paying subscribers. The Hearth includes The Post Office, Tea Rooms, The Greenhouse, The Courtyard, and other community features as described in the app.
 
 ### Pricing
 Subscription pricing is displayed in the App at the time of purchase. Prices may vary by region and are subject to change with notice.
@@ -95,7 +95,7 @@ To cancel your subscription, you must do so through:
 - **Apple devices**: Settings → Your Name → Subscriptions
 - **Android devices**: Google Play → Menu → Subscriptions
 
-Cancellation through the App alone is not sufficient. We do not process refunds for partial subscription periods. Your access to The Greenhouse continues until the end of the current paid billing period.
+Cancellation through the App alone is not sufficient. We do not process refunds for partial subscription periods. Your access to The Hearth continues until the end of the current paid billing period.
 
 ### Refunds
 Refund requests must be directed to Apple (through Apple's Report a Problem system) or Google (through Google Play's refund process). We do not control refund decisions made by Apple or Google.
@@ -185,7 +185,7 @@ If you submit feedback, suggestions, or ideas about The Meadow to us, you grant 
 
 ## 10. Third-Party Services
 
-The Meadow integrates with third-party services including Supabase (database), Stripe (payments), and Anthropic (AI prompts). Your use of these services within The Meadow is also subject to their respective terms of service and privacy policies. We are not responsible for the practices of these third-party providers beyond our contractual agreements with them.
+The Meadow integrates with third-party services including Supabase (database), Apple App Store and Google Play billing (payments), and Anthropic (AI prompts). Your use of these services within The Meadow is also subject to their respective terms of service and privacy policies. We are not responsible for the practices of these third-party providers beyond our contractual agreements with them.
 
 ---
 

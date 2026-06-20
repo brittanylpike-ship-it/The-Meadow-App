@@ -85,10 +85,10 @@ This community only works because people feel safe enough to be honest. Your act
 - The "Pour a Cup," "Send a Hug," "Take a Breath" reactions are the language of this space. Use them freely.
 
 ### The Greenhouse (Subscriber Circles and Workshops)
-- Healing circles are facilitated spaces. Follow the facilitator's guidance.
+- Healing circles are shared spaces. Follow the room guidelines and speak from your own experience.
 - Confidentiality applies: do not share what specific people say in circles outside the circle.
 - Workshops are spaces for learning, not debate. Questions are welcome; arguments are not.
-- The "Ask a Guide" feature is for questions and gentle guidance — it is not a crisis service. If you are in crisis, use 988 or Crisis Text Line.
+- The "Ask a Question" feature is for peer questions only. It is not guidance, counseling, or a crisis service. If you are in crisis, use 988 or Crisis Text Line.
 
 ### The Courtyard (Community Feed)
 - Celebrate others' milestones, even when yours feel far away.

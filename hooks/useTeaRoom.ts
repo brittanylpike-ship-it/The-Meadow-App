@@ -1,6 +1,7 @@
 import React from "react";
 
 import { useAuth } from "@/features/auth/auth-context";
+import { moderateContent, writeModerationLog } from "@/services/moderationService";
 import { hasSupabaseConfig, supabase } from "@/services/supabase";
 
 export type TeaRoomMessage = {
@@ -10,6 +11,7 @@ export type TeaRoomMessage = {
   content: string;
   display_name: string;
   created_at: string;
+  flagged?: boolean;
 };
 
 const mockTeaRoomMessages: TeaRoomMessage[] = [
@@ -63,8 +65,9 @@ export function useTeaRoom(roomBlend: string) {
     try {
       const { data, error: queryError } = await supabase
         .from("tea_room_messages")
-        .select("id,user_id,room_blend,content,created_at,profiles(display_name)")
+        .select("id,user_id,room_blend,content,created_at,flagged,is_deleted,profiles(display_name)")
         .eq("room_blend", roomBlend)
+        .eq("is_deleted", false)
         .order("created_at", { ascending: true })
         .limit(50);
 
@@ -73,13 +76,14 @@ export function useTeaRoom(roomBlend: string) {
       }
 
       setMessages(
-        (data ?? []).map((row: any) => ({
+        (data ?? []).filter((row: any) => !row.flagged || row.user_id === user.id).map((row: any) => ({
           id: row.id,
           user_id: row.user_id,
           room_blend: row.room_blend,
           content: row.content,
           display_name: row.profiles?.display_name ?? "Meadow Friend",
           created_at: row.created_at,
+          flagged: row.flagged ?? false,
         }))
       );
     } catch (caught) {
@@ -107,6 +111,10 @@ export function useTeaRoom(roomBlend: string) {
         { event: "INSERT", schema: "public", table: "tea_room_messages", filter: `room_blend=eq.${roomBlend}` },
         (payload) => {
           const row = payload.new as any;
+          if (row.flagged && row.user_id !== user.id) {
+            return;
+          }
+
           setMessages((current) => [
             ...current,
             {
@@ -116,6 +124,7 @@ export function useTeaRoom(roomBlend: string) {
               content: row.content,
               display_name: row.display_name ?? "Meadow Friend",
               created_at: row.created_at ?? new Date().toISOString(),
+              flagged: row.flagged ?? false,
             },
           ]);
         }
@@ -134,6 +143,18 @@ export function useTeaRoom(roomBlend: string) {
         return null;
       }
 
+      const moderation = await moderateContent(trimmed);
+      if (!moderation.approved) {
+        await writeModerationLog({
+          authorId: user?.id,
+          contentText: trimmed,
+          contentType: "message",
+          flagLevel: moderation.flagLevel === "clean" ? "hard_flag" : moderation.flagLevel,
+          reason: moderation.reason ?? "The message needs review before it can be shared.",
+        });
+        return null;
+      }
+
       const localMessage: TeaRoomMessage = {
         id: `local-tea-${Date.now()}`,
         user_id: user?.id ?? "local_mock",
@@ -141,6 +162,7 @@ export function useTeaRoom(roomBlend: string) {
         content: trimmed,
         display_name: user?.email?.split("@")[0] ?? "You",
         created_at: new Date().toISOString(),
+        flagged: moderation.flagLevel === "soft_flag",
       };
 
       if (!hasSupabaseConfig || !supabase || !user) {
@@ -151,8 +173,8 @@ export function useTeaRoom(roomBlend: string) {
       try {
         const { data, error: insertError } = await supabase
           .from("tea_room_messages")
-          .insert({ user_id: user.id, room_blend: roomBlend, content: trimmed })
-          .select("id,user_id,room_blend,content,created_at")
+          .insert({ content: trimmed, flagged: moderation.flagLevel === "soft_flag", room_blend: roomBlend, user_id: user.id })
+          .select("id,user_id,room_blend,content,created_at,flagged")
           .single();
 
         if (insertError) {
@@ -164,6 +186,16 @@ export function useTeaRoom(roomBlend: string) {
           display_name: localMessage.display_name,
         };
         setMessages((current) => [...current, savedMessage]);
+        if (moderation.flagLevel === "soft_flag") {
+          await writeModerationLog({
+            authorId: user.id,
+            contentId: savedMessage.id,
+            contentText: trimmed,
+            contentType: "message",
+            flagLevel: moderation.flagLevel,
+            reason: moderation.reason ?? "The message needs review before others see it.",
+          });
+        }
         return savedMessage;
       } catch (caught) {
         setError(getErrorMessage(caught));

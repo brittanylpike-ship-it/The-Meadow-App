@@ -92,6 +92,7 @@ export default function RootLayout() {
             <Stack.Screen name="post-office" options={{ title: "The Post Office" }} />
             <Stack.Screen name="post-detail" options={{ title: "The Letter" }} />
             <Stack.Screen name="courtyard" options={{ title: "The Courtyard" }} />
+            <Stack.Screen name="hearth/moderation" options={{ title: "Moderation Queue" }} />
           </Stack>
           <MeadowTabBar />
         </View>

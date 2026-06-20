@@ -4,6 +4,7 @@ export const meadowTheme = {
     linenDeep: "#E8E2D6",
     panel: "#ECE6DA",
     panelDeep: "#E8E2D6",
+    subscriptionPanel: "#F5F1EB",
     ink: "#3B2A1A",
     mutedInk: "#655747",
     sage: "#3D5A3E",

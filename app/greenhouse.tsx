@@ -4,20 +4,18 @@ import React from "react";
 import { Pressable, RefreshControl, ScrollView, Text, View } from "react-native";
 
 import { PressCard } from "@/components/PressCard";
-import { SubscriberGate } from "@/components/Hearth/Greenhouse/SubscriberGate";
 import { SkeletonBox } from "@/components/SkeletonLoader";
 import { SuccessFlash } from "@/components/SuccessFlash";
 import { meadowTheme } from "@/constants/meadow-theme";
 import { useAuth } from "@/features/auth/auth-context";
 import { HealingCircle, HealingCircleStatus, useHealingCircles } from "@/hooks/useHealingCircles";
-import { useSubscription } from "@/hooks/useSubscription";
 
 const greenhouseImage = require("@/assets/illustrations/greenhouse.png");
 
 const filters = ["all", "live", "open", "full"] as const;
 type GreenhouseFilter = (typeof filters)[number];
 
-const navigationPills = ["Healing Circles", "Guided Workshops", "Upcoming Gatherings", "Past Gatherings", "Resource Library", "Ask a Guide"] as const;
+const navigationPills = ["Healing Circles", "Guided Workshops", "Upcoming Gatherings", "Past Gatherings", "Resource Library", "Ask a Question"] as const;
 const stats = [
   { label: "Upcoming Gatherings", value: "5" },
   { label: "Circles This Week", value: "3" },
@@ -27,7 +25,6 @@ const stats = [
 
 export default function GreenhouseScreen() {
   const { user, loading } = useAuth();
-  const subscription = useSubscription();
   const { circles, userRegistrations, loading: circlesLoading, refresh, registerForCircle } = useHealingCircles();
   const [filter, setFilter] = React.useState<GreenhouseFilter>("all");
   const [refreshing, setRefreshing] = React.useState(false);
@@ -68,7 +65,7 @@ export default function GreenhouseScreen() {
         accessibilityLabel="A storybook greenhouse sanctuary"
       />
       <Text selectable style={introText}>
-        A sanctuary for healing circles, guided workshops, and meaningful community growth.
+        A quiet place for circles, workshops, and shared community growth.
       </Text>
 
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8 }}>
@@ -80,12 +77,6 @@ export default function GreenhouseScreen() {
           </Pressable>
         ))}
       </ScrollView>
-
-      {subscription.isSubscriber ? (
-        <InfoPlaque title="Subscriber Sanctuary" body="This space is for subscribers. Thank you for being part of this circle." buttonLabel="Learn More" />
-      ) : (
-        <SubscriberGate />
-      )}
 
       <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 10 }}>
         {stats.map((stat) => (
@@ -122,7 +113,7 @@ export default function GreenhouseScreen() {
       )}
 
       <InfoPlaque title="Today in the Greenhouse" body="Anxiety & Overwhelm Circle, Evening Meditation with Sage, and Journaling Together are gathered here for the day." />
-      <InfoPlaque title="Featured Workshop" body="Tools for Emotional Regulation with Sage Willow. A guided space to breathe, name, and steady what is here." buttonLabel="Reserve a Seat" />
+      <InfoPlaque title="Featured Workshop" body="A gentle workshop space to breathe, name, and steady what is here." buttonLabel="Reserve a Seat" />
       <InfoPlaque title="In the Sanctuary" body="You have full access to circles, workshops, and resources in the Greenhouse." />
       <InfoPlaque title="Garden Progress" body="Together we bloom. The garden grows as people show up with care." />
       <InfoPlaque title="Community Garden" body="A shared place to see what has been watered, tended, and held by the circle." buttonLabel="View Garden" />
@@ -164,7 +155,7 @@ function CircleCard({ circle, onReserve, reserved }: { circle: HealingCircle; on
         {circle.title}
       </Text>
       <Text selectable style={{ color: meadowTheme.colors.mutedInk, fontFamily: meadowTheme.fonts.body, fontSize: 14, fontStyle: "italic", lineHeight: 21 }}>
-        Hosted by {circle.host_name}
+        Held by {circle.host_name}
       </Text>
       <Text selectable numberOfLines={3} style={{ color: meadowTheme.colors.ink, fontFamily: meadowTheme.fonts.body, fontSize: 14, lineHeight: 21 }}>
         {circle.description}

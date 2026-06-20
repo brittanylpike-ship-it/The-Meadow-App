@@ -4,11 +4,13 @@ import React from "react";
 import { Pressable, RefreshControl, ScrollView, Text, TextInput, View } from "react-native";
 
 import { SkeletonBox } from "@/components/SkeletonLoader";
+import { CrisisSupportCard } from "@/components/Hearth/CrisisSupportCard";
 import { SafetyBar } from "@/components/Hearth/SafetyBar";
 import { SuccessFlash } from "@/components/SuccessFlash";
 import { meadowTheme } from "@/constants/meadow-theme";
 import { useAuth } from "@/features/auth/auth-context";
 import { TeaRoomMessage, useTeaRoom } from "@/hooks/useTeaRoom";
+import { checkCommunityContent } from "@/services/moderationService";
 
 const teaRoomsImage = require("@/assets/illustrations/tea-rooms.png");
 
@@ -29,6 +31,8 @@ export default function TeaRoomsScreen() {
   const [roomInfoOpen, setRoomInfoOpen] = React.useState(false);
   const [refreshing, setRefreshing] = React.useState(false);
   const [flash, setFlash] = React.useState<string | null>(null);
+  const [warning, setWarning] = React.useState<string | null>(null);
+  const [crisisOpen, setCrisisOpen] = React.useState(false);
   const teaRoom = useTeaRoom(roomBlend);
 
   if (!loading && !user) {
@@ -40,9 +44,20 @@ export default function TeaRoomsScreen() {
       return;
     }
 
-    await teaRoom.sendMessage(draft);
+    const check = await checkCommunityContent(draft, 500);
+    setWarning(check.warning);
+    if (check.moderation.flagLevel === "crisis") {
+      setCrisisOpen(true);
+      return;
+    }
+
+    if (!check.ok) {
+      return;
+    }
+
+    const saved = await teaRoom.sendMessage(check.cleanedBody);
     setDraft("");
-    setFlash("Sent.");
+    setFlash(saved?.flagged ? "Sent. Held for gentle review." : "Sent.");
   }
 
   async function handleRefresh() {
@@ -110,7 +125,7 @@ export default function TeaRoomsScreen() {
         <View style={{ gap: 10 }}>
           <InfoPlaque title="About This Table" body="A gentle space to vent, release, and be heard without judgment. We listen. We support. We hold space." />
           <InfoPlaque title="Table Etiquette" body="Be kind and respectful. No fixing, just listening. Take what you need and leave what you do not." />
-          <InfoPlaque title="Tools & Support" body="Grounding tools, crisis resources, and moderator support remain close by when you need care." />
+          <InfoPlaque title="Tools & Support" body="Crisis resources and report tools remain close by when you need them." />
           <Pressable accessibilityLabel="Rest on the Bench" accessibilityRole="button" style={quietButton}>
             <Text selectable={false} style={quietButtonText}>
               Rest on the Bench
@@ -169,7 +184,13 @@ export default function TeaRoomsScreen() {
           </Text>
         </Pressable>
       </View>
+      {warning ? (
+        <Text selectable style={{ color: meadowTheme.colors.clay, fontFamily: meadowTheme.fonts.body, fontSize: 13, lineHeight: 20, textAlign: "center" }}>
+          {warning}
+        </Text>
+      ) : null}
       <SafetyBar contentId={`tea-room-${roomBlend}`} contentType="message" />
+      <CrisisSupportCard visible={crisisOpen} onClose={() => setCrisisOpen(false)} />
       <SuccessFlash message={flash} onDone={() => setFlash(null)} />
     </ScrollView>
   );

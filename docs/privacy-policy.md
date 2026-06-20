@@ -63,10 +63,10 @@ When you participate in The Hearth (community spaces), we collect:
 Community content is visible to other users of The Meadow as intended by the features. Please do not share personally identifying information (your real name, location, phone number, etc.) in community spaces.
 
 **Subscription Information**
-If you subscribe to The Greenhouse (subscriber-only features), payment is processed by **Stripe**, a third-party payment processor. We do not receive or store your credit card number, debit card number, or full payment details. We receive from Stripe:
+If you subscribe to The Hearth (subscriber-only community features), payment is processed by the **Apple App Store** or **Google Play Store**. We do not receive or store your credit card number, debit card number, or full payment details. We receive:
 - Confirmation that a subscription is active
 - Your subscription plan type and renewal date
-- A Stripe customer ID (a reference number, not payment data)
+- A platform subscription reference number, not payment data
 
 **Check-Ins and Progress**
 When you use The Greenhouse check-in or Water the Garden features, we store:
@@ -118,9 +118,9 @@ Supabase's privacy policy is available at: https://supabase.com/privacy
 
 Your chapter progress, companion data, and certain app preferences are also stored locally on your device using AsyncStorage. This data stays on your device and is not transmitted unless you are logged in to an account, at which point it syncs to Supabase.
 
-### Payment Data: Stripe
+### Payment Data: App Stores
 
-Subscription payment data is stored by **Stripe, Inc.**, a PCI-DSS Level 1 certified payment processor. We never touch your payment card data. Stripe's privacy policy is available at: https://stripe.com/privacy
+Subscription payment data is handled by the **Apple App Store** or **Google Play Store**. We never touch your payment card data. Their privacy policies and billing terms apply to purchases made through their platforms.
 
 ### AI Prompt Service: Anthropic
 
@@ -142,7 +142,7 @@ We use the information we collect to:
 - Create and manage your account
 - Deliver the app's features (rituals, journal, companions, community spaces)
 - Generate personalized AI writing prompts based on your mood and chapter context
-- Process and manage your subscription to The Greenhouse
+- Process and manage your subscription to The Hearth
 - Display your progress through chapters and companions
 - Enable community features (letters, tea room chat, courtyard posts)
 - Detect and address safety concerns in community spaces (moderation)
@@ -174,7 +174,7 @@ We share data only in the following limited circumstances:
 **Service Providers**
 We share data with third-party services that help us operate the app:
 - **Supabase** — database and authentication
-- **Stripe** — subscription payment processing
+- **Apple App Store / Google Play Store** — subscription payment processing
 - **Anthropic** — AI writing prompt generation (anonymized context only, as described above)
 - **Expo / EAS** — app building and delivery
 - **Apple App Store / Google Play Store** — app distribution (subject to their own privacy policies)

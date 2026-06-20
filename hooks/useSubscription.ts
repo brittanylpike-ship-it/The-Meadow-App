@@ -7,9 +7,11 @@ export function useSubscription() {
   const { user } = useAuth();
   const [snapshot, setSnapshot] = React.useState<SubscriptionSnapshot>({
     isSubscriber: false,
+    monthlyPriceLabel: "$4.99",
     status: "none",
     plan: null,
     planEndsAt: null,
+    yearlyPriceLabel: "$44.99",
   });
   const [isLoading, setIsLoading] = React.useState(true);
 

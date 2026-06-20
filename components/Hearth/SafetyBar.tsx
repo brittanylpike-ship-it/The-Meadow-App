@@ -1,4 +1,6 @@
 import { PressCard } from "@/components/PressCard";
+import { CrisisSupportCard } from "@/components/Hearth/CrisisSupportCard";
+import { SupportResourcesSheet } from "@/components/Hearth/SupportResourcesSheet";
 import { meadowTheme } from "@/constants/meadow-theme";
 import { ReportReason, submitReport } from "@/services/moderationService";
 import { useAuth } from "@/features/auth/auth-context";
@@ -17,6 +19,7 @@ export function SafetyBar({
   const { user } = useAuth();
   const [reportOpen, setReportOpen] = React.useState(false);
   const [crisisNotice, setCrisisNotice] = React.useState(false);
+  const [supportOpen, setSupportOpen] = React.useState(false);
 
   async function chooseReason(reason: ReportReason) {
     const result = await submitReport({ reporterId: user?.id, contentId, contentType, reason });
@@ -38,7 +41,7 @@ export function SafetyBar({
           }}
         >
           <Text selectable style={careText}>
-            If you or someone you know is in crisis: call or text 988, or text HOME to 741741.
+            If you're in crisis or need immediate support, please reach out to a local helpline.
           </Text>
         </View>
       ) : null}
@@ -58,7 +61,7 @@ export function SafetyBar({
         <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
           <SafetyAction label="Report" onPress={() => setReportOpen(true)} />
           <SafetyAction label="Community Guidelines" />
-          <SafetyAction label="Need Support" onPress={() => setCrisisNotice(true)} />
+          <SafetyAction label="Need Support? Get Help" onPress={() => setSupportOpen(true)} />
         </View>
       </View>
 
@@ -89,6 +92,8 @@ export function SafetyBar({
           </View>
         </View>
       </Modal>
+      <CrisisSupportCard visible={crisisNotice} onClose={() => setCrisisNotice(false)} />
+      <SupportResourcesSheet visible={supportOpen} onClose={() => setSupportOpen(false)} />
     </View>
   );
 }

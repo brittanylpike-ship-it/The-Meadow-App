@@ -1,4 +1,5 @@
 import { MeadowButton } from "@/components/meadow-button";
+import { CrisisSupportCard } from "@/components/Hearth/CrisisSupportCard";
 import { meadowTheme } from "@/constants/meadow-theme";
 import { checkCommunityContent } from "@/services/moderationService";
 import React from "react";
@@ -16,10 +17,16 @@ export function CreateLetterSheet({
   const [body, setBody] = React.useState("");
   const [cubby, setCubby] = React.useState("introductions");
   const [warning, setWarning] = React.useState<string | null>(null);
+  const [crisisOpen, setCrisisOpen] = React.useState(false);
 
   async function save() {
-    const result = checkCommunityContent(body, 1000);
+    const result = await checkCommunityContent(body, 1000);
     setWarning(result.warning);
+    if (result.moderation.flagLevel === "crisis") {
+      setCrisisOpen(true);
+      return;
+    }
+
     if (!result.ok || !result.cleanedBody) {
       return;
     }
@@ -71,6 +78,7 @@ export function CreateLetterSheet({
           </Pressable>
         </View>
       </View>
+      <CrisisSupportCard visible={crisisOpen} onClose={() => setCrisisOpen(false)} />
     </Modal>
   );
 }

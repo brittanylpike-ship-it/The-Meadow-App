@@ -97,7 +97,7 @@ The Meadow's community features (The Post Office, Tea Rooms, The Greenhouse, and
 
 (b) **No Professional Endorsement.** Community posts, letters, messages, and responses that discuss mental health, grief, trauma, medication, therapy, self-care practices, or wellness strategies represent the personal experiences and opinions of individual users only. They do not represent the views of The Meadow, Brittany Pike, or any licensed mental health or medical professional, and should not be treated as professional advice.
 
-(c) **Peer Support Limitations.** The healing circles and community gatherings facilitated within The Greenhouse are peer support gatherings, not clinical group therapy sessions. Facilitators of healing circles and workshops within the Application are not acting as licensed therapists, counselors, or clinical social workers unless independently credentialed and explicitly identified as such.
+(c) **Peer Support Limitations.** The healing circles and community gatherings hosted within The Greenhouse are peer support gatherings, not clinical group therapy sessions. Hosts of healing circles and workshops within the Application are not acting as licensed therapists, counselors, or clinical social workers unless independently credentialed and explicitly identified as such.
 
 (d) **Information Shared by Others.** Information shared by other users, including information about medications, treatment approaches, therapeutic modalities, or coping strategies, reflects personal experience only and is not a substitute for advice from a qualified healthcare provider.
 

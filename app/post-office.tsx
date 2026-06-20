@@ -4,12 +4,14 @@ import React from "react";
 import { Modal, Pressable, RefreshControl, ScrollView, Text, TextInput, View } from "react-native";
 
 import { PressCard } from "@/components/PressCard";
+import { CrisisSupportCard } from "@/components/Hearth/CrisisSupportCard";
 import { SafetyBar } from "@/components/Hearth/SafetyBar";
 import { SkeletonBox } from "@/components/SkeletonLoader";
 import { SuccessFlash } from "@/components/SuccessFlash";
 import { meadowTheme } from "@/constants/meadow-theme";
 import { useAuth } from "@/features/auth/auth-context";
 import { HearthPost, useHearthPosts } from "@/hooks/useHearthPosts";
+import { checkCommunityContent } from "@/services/moderationService";
 
 const postOfficeImage = require("@/assets/illustrations/post-office.png");
 
@@ -230,19 +232,32 @@ function ComposeLetterModal({
   visible,
 }: {
   onCancel: () => void;
-  onSave: (input: { title?: string | null; content: string; category: string }) => Promise<HearthPost | null>;
+  onSave: (input: { title?: string | null; content: string; category: string; flagged?: boolean }) => Promise<HearthPost | null>;
   visible: boolean;
 }) {
   const [category, setCategory] = React.useState("grief");
   const [title, setTitle] = React.useState("");
   const [content, setContent] = React.useState("");
+  const [warning, setWarning] = React.useState<string | null>(null);
+  const [crisisOpen, setCrisisOpen] = React.useState(false);
 
   async function save() {
     if (!content.trim()) {
       return;
     }
 
-    await onSave({ title, content, category });
+    const check = await checkCommunityContent(content, 1000);
+    setWarning(check.warning);
+    if (check.moderation.flagLevel === "crisis") {
+      setCrisisOpen(true);
+      return;
+    }
+
+    if (!check.ok) {
+      return;
+    }
+
+    await onSave({ title, content: check.cleanedBody, category, flagged: check.moderation.flagLevel === "soft_flag" });
     setTitle("");
     setContent("");
     onCancel();
@@ -262,6 +277,11 @@ function ComposeLetterModal({
           </ScrollView>
           <Input value={title} onChangeText={setTitle} placeholder="Give your letter a title (optional)" label="Letter title" />
           <Input value={content} onChangeText={setContent} placeholder={"Dear reader,\nBegin wherever feels right..."} label="Letter content" multiline minHeight={160} />
+          {warning ? (
+            <Text selectable style={{ color: meadowTheme.colors.clay, fontFamily: meadowTheme.fonts.body, fontSize: 13, lineHeight: 20, textAlign: "center" }}>
+              {warning}
+            </Text>
+          ) : null}
           <MeadowButton label="Send Your Letter ->" disabled={!content.trim()} onPress={save} />
           <Pressable accessibilityLabel="Cancel letter" accessibilityRole="button" onPress={onCancel} style={{ alignItems: "center", padding: 8 }}>
             <Text selectable={false} style={{ color: meadowTheme.colors.sage, fontFamily: meadowTheme.fonts.body, fontSize: 14 }}>
@@ -270,6 +290,7 @@ function ComposeLetterModal({
           </Pressable>
         </Pressable>
       </Pressable>
+      <CrisisSupportCard visible={crisisOpen} onClose={() => setCrisisOpen(false)} />
     </Modal>
   );
 }

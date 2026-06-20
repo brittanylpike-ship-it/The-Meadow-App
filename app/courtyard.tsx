@@ -4,12 +4,14 @@ import React from "react";
 import { Modal, Pressable, RefreshControl, ScrollView, Text, TextInput, View } from "react-native";
 
 import { PressCard } from "@/components/PressCard";
+import { CrisisSupportCard } from "@/components/Hearth/CrisisSupportCard";
 import { SafetyBar } from "@/components/Hearth/SafetyBar";
 import { SkeletonBox } from "@/components/SkeletonLoader";
 import { SuccessFlash } from "@/components/SuccessFlash";
 import { meadowTheme } from "@/constants/meadow-theme";
 import { useAuth } from "@/features/auth/auth-context";
 import { HearthPost, useHearthPosts } from "@/hooks/useHearthPosts";
+import { checkCommunityContent } from "@/services/moderationService";
 
 const courtyardImage = require("@/assets/illustrations/courtyard.png");
 const categories = ["Introductions", "Celebrations", "Support & Questions", "Creative Corner", "Events & Meetups"] as const;
@@ -244,10 +246,12 @@ function ComposePostModal({
   visible,
 }: {
   onCancel: () => void;
-  onSave: (input: { title?: string | null; content: string; category: string }) => Promise<HearthPost | null>;
+  onSave: (input: { title?: string | null; content: string; category: string; flagged?: boolean }) => Promise<HearthPost | null>;
   visible: boolean;
 }) {
   const [content, setContent] = React.useState("");
+  const [warning, setWarning] = React.useState<string | null>(null);
+  const [crisisOpen, setCrisisOpen] = React.useState(false);
   const remaining = 500 - content.length;
 
   async function save() {
@@ -255,7 +259,18 @@ function ComposePostModal({
       return;
     }
 
-    await onSave({ content, category: "general" });
+    const check = await checkCommunityContent(content, 500);
+    setWarning(check.warning);
+    if (check.moderation.flagLevel === "crisis") {
+      setCrisisOpen(true);
+      return;
+    }
+
+    if (!check.ok) {
+      return;
+    }
+
+    await onSave({ content: check.cleanedBody, category: "general", flagged: check.moderation.flagLevel === "soft_flag" });
     setContent("");
     onCancel();
   }
@@ -291,6 +306,11 @@ function ComposePostModal({
           <Text selectable style={{ color: meadowTheme.colors.mutedInk, fontFamily: meadowTheme.fonts.body, fontSize: 12, lineHeight: 17, textAlign: "right" }}>
             {remaining} left
           </Text>
+          {warning ? (
+            <Text selectable style={{ color: meadowTheme.colors.clay, fontFamily: meadowTheme.fonts.body, fontSize: 13, lineHeight: 20, textAlign: "center" }}>
+              {warning}
+            </Text>
+          ) : null}
           <Pressable accessibilityLabel="Post to the Courtyard" accessibilityRole="button" disabled={!content.trim()} onPress={save} style={{ alignItems: "center", backgroundColor: content.trim() ? meadowTheme.colors.sage : meadowTheme.colors.fog, borderRadius: meadowTheme.radius.panel, minHeight: 50, justifyContent: "center" }}>
             <Text selectable={false} style={{ color: meadowTheme.colors.linenDeep, fontFamily: meadowTheme.fonts.body, fontSize: 15 }}>
               {"Post to the Courtyard ->"}
@@ -303,6 +323,7 @@ function ComposePostModal({
           </Pressable>
         </Pressable>
       </Pressable>
+      <CrisisSupportCard visible={crisisOpen} onClose={() => setCrisisOpen(false)} />
     </Modal>
   );
 }

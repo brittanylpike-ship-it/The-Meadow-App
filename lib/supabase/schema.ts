@@ -24,6 +24,7 @@ export type LetterRow = {
   pinned_by: string | null;
   created_at: string;
   is_deleted: boolean;
+  flagged: boolean;
 };
 
 export type LetterReplyRow = {
@@ -36,6 +37,7 @@ export type LetterReplyRow = {
   seal_count: number;
   created_at: string;
   is_deleted: boolean;
+  flagged: boolean;
 };
 
 export type TeaTableRow = {
@@ -58,6 +60,7 @@ export type TeaMessageRow = {
   reaction_counts: Record<string, number>;
   created_at: string;
   is_deleted: boolean;
+  flagged: boolean;
 };
 
 export type HealingCircleStatus = "open" | "filling_fast" | "live" | "completed";
@@ -72,14 +75,14 @@ export type HealingCircleRow = {
   capacity: number;
   enrolled_count: number;
   status: HealingCircleStatus;
-  facilitator_name: string;
+  host_name: string;
   is_subscriber_only: boolean;
 };
 
 export type WorkshopRow = {
   id: string;
   title: string;
-  facilitator_name: string;
+  host_name: string;
   description: string;
   scheduled_at: string;
   duration_minutes: number;
@@ -106,6 +109,7 @@ export type CourtyardPostRow = {
   created_at: string;
   is_deleted: boolean;
   is_pinned: boolean;
+  flagged: boolean;
 };
 
 export type ReportContentType = "letter" | "reply" | "message" | "post" | "comment";
@@ -118,6 +122,24 @@ export type ReportRow = {
   reason: string;
   created_at: string;
   reviewed: boolean;
+};
+
+export type ModerationFlagLevel = "soft_flag" | "hard_flag" | "crisis";
+export type ModerationResultLevel = "clean" | ModerationFlagLevel;
+
+export type ModerationLogRow = {
+  id: string;
+  content_id: string | null;
+  content_type: ReportContentType;
+  content_text: string;
+  flag_level: ModerationFlagLevel;
+  ai_reason: string;
+  author_id: string;
+  reviewed: boolean;
+  reviewed_by: string | null;
+  reviewed_at: string | null;
+  action_taken: "approved" | "removed" | "escalated" | null;
+  created_at: string;
 };
 
 export type BlockRow = {
