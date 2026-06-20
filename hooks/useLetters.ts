@@ -10,7 +10,5 @@ export function useLetters(cubby = "all") {
     refresh: posts.refresh,
     createLetter: posts.addPost,
     sealLetter: posts.addSeal,
-    loadReplies: posts.loadReplies,
-    addReply: posts.addReply,
   };
 }

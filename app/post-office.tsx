@@ -155,7 +155,8 @@ export default function PostOfficeScreen() {
         <InfoPlaque title="Most Sealed Letters" body="The letters receiving the most seals this week are gathered here gently, without ranking anyone's grief." />
       ) : null}
 
-      <SafetyBar contentId="post-office" contentType="letter" />
+        {/* Safety & Care is shared across The Hearth. */}
+        <SafetyBar contentId="post-office" contentType="letter" />
 
       <ComposeLetterModal visible={composerOpen} onCancel={() => setComposerOpen(false)} onSave={posts.addPost} />
       <SuccessFlash message={flash} onDone={() => setFlash(null)} />

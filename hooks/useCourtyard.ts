@@ -10,7 +10,5 @@ export function useCourtyard(category = "all") {
     refresh: posts.refresh,
     createPost: posts.addPost,
     offerHeart: posts.addSeal,
-    loadComments: posts.loadReplies,
-    addComment: posts.addReply,
   };
 }
