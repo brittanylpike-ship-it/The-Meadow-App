@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "meadow-web",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["C:\\Users\\lenovo\\Downloads\\THE MEADOW\\meadow-web\\node_modules\\next\\dist\\bin\\next", "dev", "--port", "3000"],
+      "cwd": "C:\\Users\\lenovo\\Downloads\\THE MEADOW\\meadow-web",
+      "port": 3000
+    }
+  ]
+}

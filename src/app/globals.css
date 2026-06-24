@@ -1,26 +1,51 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Ensure content starts below mobile browser chrome / notch */
+body {
+  padding-top: env(safe-area-inset-top);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* Meadow palette */
+  --color-parchment:      #F3F0EA;
+  --color-parchment-deep: #ECE7DE;
+  --color-card:           #EFEAE2;
+  --color-blush:          #E8E2D8;
+  --color-border:         #D3CCC1;
+  --color-ember:          #B2A394;
+  --color-rose:           #C8908E;
+  --color-gold:           #C7A85A;
+  --color-pond:           #CCDCCF;
+  --color-sage:           #71806A;
+  --color-moss:           #64735E;
+  --color-text:           #56624F;
+  --color-ink:            #6E7557;
+
+  /* Fonts — injected via Next.js layout */
+  --font-display:  var(--font-playfair), Georgia, serif;
+  --font-serif:    var(--font-cormorant), Georgia, serif;
+  --font-script:   var(--font-dancing), cursive;
+  --font-sans:     var(--font-cormorant), Georgia, serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #F3F0EA;
+  color: #56624F;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #D3CCC1; border-radius: 2px; }
+* { -webkit-tap-highlight-color: transparent; }
