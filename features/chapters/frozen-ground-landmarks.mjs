@@ -1,0 +1,42 @@
+export const frozenGroundLandmarks = [
+  {
+    id: "evergreen_tree",
+    title: "Evergreen Tree",
+    emotionalThread: "Still expecting",
+    description: "A living archive of waiting, where thought tags become branches and return as landscape.",
+    route: "/evergreen-tree",
+    enabled: true,
+  },
+  {
+    id: "frosted_window",
+    title: "Frosted Window",
+    emotionalThread: "Looking through",
+    description: "A dim refuge where a small cleared place in the frost can remember what comfort looked like.",
+    route: "/frosted-window",
+    enabled: true,
+  },
+  {
+    id: "frozen_pond",
+    title: "Frozen Pond",
+    emotionalThread: "Held under ice",
+    description: "A still surface where clean cracks and open water will show what has begun to move again.",
+    route: "/frozen-pond",
+    enabled: true,
+  },
+  {
+    id: "quiet_hour",
+    title: "Quiet Hour",
+    emotionalThread: "Time changed shape",
+    description: "A lantern-lit hour for the moments when time feels unfamiliar and too loud.",
+    route: "/quiet-hour",
+    enabled: true,
+  },
+  {
+    id: "footprints",
+    title: "Footprints",
+    emotionalThread: "A first path",
+    description: "A slow trail through the snow where return visits will become visible as a remembered route.",
+    route: "/footprints",
+    enabled: true,
+  },
+];

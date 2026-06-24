@@ -1,0 +1,63 @@
+{
+  "expo": {
+    "name": "The Meadow",
+    "slug": "the-meadow",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "icon": "./assets/icon.png",
+    "scheme": "meadow",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#E2DDD6"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.themeadow.app",
+      "buildNumber": "1",
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "The Meadow uses your photo library to add images to your Memory Garden keepsakes.",
+        "NSCameraUsageDescription": "The Meadow uses your camera to capture memories for your Keepsake Box."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icon-foreground.png",
+        "backgroundColor": "#E2DDD6"
+      },
+      "package": "com.themeadow.app",
+      "versionCode": 1,
+      "permissions": [
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "CAMERA"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/icon.png",
+      "backgroundColor": "#E2DDD6",
+      "themeColor": "#E2DDD6"
+    },
+    "experiments": {
+      "typedRoutes": true
+    },
+    "plugins": [
+      "expo-font",
+      "expo-secure-store",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The Meadow uses your photo library to add images to your Memory Garden keepsakes.",
+          "cameraPermission": "The Meadow uses your camera to capture memories for your Keepsake Box."
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "REPLACE_WITH_EAS_PROJECT_ID"
+      }
+    }
+  }
+}
